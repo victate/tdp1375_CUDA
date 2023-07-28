@@ -2,6 +2,7 @@
 
 int main()
 {
+    clock_t start, end;
     
     int sigma[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14};
     int sigma_index[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14};
@@ -39,6 +40,7 @@ int main()
     permutation[1].minSymbol = 0;
 
     printf("\nComputing product: \n");
+    start = clock();
 
 
     Permutation new_permutation = computeProduct(permutation, 2);
@@ -66,8 +68,48 @@ int main()
     }
     printf("\n\n");
 
+    Cycle * moves = searchFor2_2Seq(new_permutation, cycle_pi);
 
+    end = clock();
+    printf("searchFor2_2Seq took %f millis\n", (double)(end - start) / CLOCKS_PER_SEC);
+
+    printf("\nPrinting multicycle: \n");
+    for(int m=0; m<new_permutation.sizeMulticycle; m++) {
+        if (m != 0) {
+            printf("\n");
+        }
+        printf("%d = (", m);
+        for (int c = 0; c < new_permutation.multicycle[m].sizeSymbols; c++) {
+            if (c != 0) {
+                printf(", ");
+            }
+            printf("%d", new_permutation.multicycle[m].symbols[c]);
+        }
+        printf(") Index: (");
+        for (int c = 0; c < new_permutation.maxSymbol; c++) {
+            if (c != 0) {
+                printf(", ");
+            }
+            printf("%d", new_permutation.multicycle[m].symbolsIndexes[c]);
+        }
+        printf(")");
+    }
+    printf("\n\n");
+
+    printf("\nPrinting moves: \n");
+
+    for(int i=0; i < sizeof(moves)/sizeof(moves[i].sizeSymbols); i++){
+        printf("\n Move: %d \n Cycle: [", 2);
+        for(int j = 0; j < moves[i].sizeSymbols; j++){
+            if(j > 0){
+                printf(", ");
+            }
+            printf("%d", moves[i].symbols[j]);
+        }
+        printf("] \n");
+    }
 
     free(new_permutation.multicycle);
+    free(moves);
     free(permutation);
 }

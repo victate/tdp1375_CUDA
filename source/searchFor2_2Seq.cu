@@ -136,7 +136,9 @@ Move * generateAll0And2Moves(Permutation spi, Cycle pi)
                                 permutation[1].maxSymbol = moveCycle.maxSymbol;
                                 permutation[1].numOfEvenCycles = getNumberOfEvenCycles(permutation[1]);
 
+                                printf("entering computeProduct \n");
                                 spi_ = computeProduct(permutation, 2);
+                                printf("finished computeProduct \n");
 
                                 delta = spi_.numOfEvenCycles - spiNumberOfEvenCycles;
                                 free(spi_.multicycle);
