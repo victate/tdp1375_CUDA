@@ -73,29 +73,6 @@ int main()
     end = clock();
     printf("searchFor2_2Seq took %f millis\n", (double)(end - start) / CLOCKS_PER_SEC);
 
-    printf("\nPrinting multicycle: \n");
-    for(int m=0; m<new_permutation.sizeMulticycle; m++) {
-        if (m != 0) {
-            printf("\n");
-        }
-        printf("%d = (", m);
-        for (int c = 0; c < new_permutation.multicycle[m].sizeSymbols; c++) {
-            if (c != 0) {
-                printf(", ");
-            }
-            printf("%d", new_permutation.multicycle[m].symbols[c]);
-        }
-        printf(") Index: (");
-        for (int c = 0; c < new_permutation.maxSymbol; c++) {
-            if (c != 0) {
-                printf(", ");
-            }
-            printf("%d", new_permutation.multicycle[m].symbolsIndexes[c]);
-        }
-        printf(")");
-    }
-    printf("\n\n");
-
     printf("\nPrinting moves: \n");
 
     for(int i=0; i < sizeof(moves)/sizeof(moves[i].sizeSymbols); i++){

@@ -119,11 +119,9 @@ Permutation findCycles(int include1Cycle, Permutation * permutation, const int p
         new_multicycle[new_multicycle_size-1].maxSymbol = new_cycle.maxSymbol;
         new_multicycle[new_multicycle_size-1].minSymbol = new_cycle.minSymbol;
         new_cycle.sizeSymbols = 0;
-        
-        printf("starting to free cycle\n");
+
         free(new_cycle.symbols);
         free(new_cycle.symbolsIndexes);
-        printf("freed new_cycle \n");
     }
 
     new_permutations.multicycle = new_multicycle;
@@ -131,7 +129,6 @@ Permutation findCycles(int include1Cycle, Permutation * permutation, const int p
     new_permutations.minSymbol = permutation[0].minSymbol;
     new_permutations.maxSymbol = permutation[0].maxSymbol;
 
-    printf("getting number of even cycles\n");
     new_permutations.numOfEvenCycles = getNumberOfEvenCycles(new_permutations);
 
     free(function);

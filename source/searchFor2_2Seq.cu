@@ -136,9 +136,7 @@ Move * generateAll0And2Moves(Permutation spi, Cycle pi)
                                 permutation[1].maxSymbol = moveCycle.maxSymbol;
                                 permutation[1].numOfEvenCycles = getNumberOfEvenCycles(permutation[1]);
 
-                                printf("entering computeProduct \n");
                                 spi_ = computeProduct(permutation, 2);
-                                printf("finished computeProduct \n");
 
                                 delta = spi_.numOfEvenCycles - spiNumberOfEvenCycles;
                                 free(spi_.multicycle);
@@ -153,9 +151,8 @@ Move * generateAll0And2Moves(Permutation spi, Cycle pi)
                                     moves[moves_size-1].cycle.symbols = (int *) malloc(moveCycle.sizeSymbols * sizeof(int));
                                     moves[moves_size-1].cycle.symbolsIndexes = (int *) malloc((spi.maxSymbol+1)*sizeof(int));
                                     memcpy(moves[moves_size-1].cycle.symbols, moveCycle.symbols, moveCycle.sizeSymbols*sizeof(int));
-                                    memcpy(moves[moves_size-1].cycle.symbolsIndexes, moveCycle.symbolsIndexes, (spi.maxSymbol+1)*sizeof(int));
+                                    memcpy(moves[moves_size-1].cycle.symbolsIndexes, moveCycle.symbolsIndexes, (spi.maxSymbol+1) * sizeof(int));
                                     moves[moves_size-1].cycle.sizeSymbols = moveCycle.sizeSymbols;
-
                                 }
                             }
                             is_2Move = 1;
@@ -167,8 +164,9 @@ Move * generateAll0And2Moves(Permutation spi, Cycle pi)
     }
     free(cycle_index);
     free(permutation[0].multicycle);
-    permutation[0].sizeMulticycle = 0;
+    free(permutation[1].multicycle);
     free(permutation);
+    
     double time_taken = ((double)t)/CLOCKS_PER_SEC;
     printf("generateAll0And2Moves took %f seconds\n", time_taken);
     return moves;
@@ -193,7 +191,9 @@ Cycle * searchFor2_2Seq(Permutation spi, Cycle pi) {
 
             Permutation new_permutation[2] = {spi, inverse_move};
 
+            printf("To enter compute");
             Permutation _spi = computeProduct(new_permutation, 2);
+            printf("Passed compute");
             Cycle _pi = optimizedApplyTransposition(pi, moves[i]);
             Move * secondMoves = generateAll0And2Moves(_spi, _pi);
 
