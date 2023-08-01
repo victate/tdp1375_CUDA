@@ -3,27 +3,27 @@
 #include <string.h>
 #include "utils.cu"
 
-Permutation findCycles(int include1Cycle, Permutation * permutation, const int permutation_len)
+Permutation findCycles(int include1Cycle, Permutation * permutation, int permutation_len)
 {
-    Cycle new_cycle;
-    new_cycle.sizeSymbols = 0;
-    Cycle * new_multicycle;
-    Permutation new_permutations;
     int n = permutation[0].maxSymbol+1;
-    int ** function = (int **) malloc(permutation_len * sizeof(int *));
     int counter = 0;
     int start = 0;
     int image = 0;
     int new_multicycle_size = 0;
-    int * seen = (int *) malloc(n * sizeof(int));
 
+    Cycle new_cycle;
+    new_cycle.sizeSymbols = 0;
+
+    Cycle * new_multicycle;
+    Permutation new_permutations;
+    
+    int ** function = (int **) malloc(permutation_len * sizeof(int *));
     for(int i=0; i<permutation_len; i++){
         function[i] = (int *) malloc(n*sizeof(int));
         for(int j=0; j<n; j++){
             function[i][j] = -1;
         }
     }
-
     for(int i = 0; i < permutation_len; i++) {
         for (int j = 0; j < permutation[i].sizeMulticycle; j++) {
             Cycle c = permutation[i].multicycle[j];
@@ -32,7 +32,8 @@ Permutation findCycles(int include1Cycle, Permutation * permutation, const int p
             }
         }
     }
-
+    
+    int * seen = (int *) malloc(n * sizeof(int));
     for(int i=0; i<n; i++){
         seen[i] = 0;
     }

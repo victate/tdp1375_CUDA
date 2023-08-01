@@ -69,34 +69,30 @@ Move * generateAll0And2Moves(Permutation spi, Cycle pi)
     t = clock();
 
     Move * moves;
-    Cycle * cycle_index = (Cycle *) malloc(pi.sizeSymbols * sizeof(int));
-    Cycle moveCycle;
+    Permutation spi_;
+
     int moves_size = 0;
-    int is_2Move = 1;
+    int is_2move = 1;
+    int spiNumberOfEvenCycles = 0;
     int a;
     int b;
     int c;
     int delta;
 
-    Permutation spi_;
+    Permutation permutation[2];
+    permutation[0].sizeMulticycle = spi.sizeMulticycle;
+    permutation[0].multicycle = spi.multicycle;
+    permutation[0].minSymbol = spi.minSymbol;
+    permutation[0].maxSymbol = spi.maxSymbol;
+    permutation[0].numOfEvenCycles = getNumberOfEvenCycles(permutation[0]);
 
-    int spiNumberOfEvenCycles = 0;
+    Cycle * cycle_index = (Cycle *) malloc(pi.sizeSymbols * sizeof(int));
     for (int i = 0; i < spi.sizeMulticycle; i++) {
         for(int s = 0; s < spi.multicycle[i].sizeSymbols; s++){
             cycle_index[spi.multicycle[i].symbols[s]] = spi.multicycle[i];
         }
         spiNumberOfEvenCycles += spi.multicycle[i].sizeSymbols % 2;
     }
-
-    Permutation * permutation = (Permutation *) malloc(2*sizeof(Permutation));
-    permutation[0].sizeMulticycle = spi.sizeMulticycle;
-    permutation[0].multicycle = (Cycle *) malloc((spi.sizeMulticycle)*sizeof(Cycle));
-    permutation[0].minSymbol = spi.minSymbol;
-    permutation[0].maxSymbol = spi.maxSymbol;
-    for(int c = 0; c < spi.sizeMulticycle; c++){
-        permutation[0].multicycle[c] = spi.multicycle[c];
-    }
-    permutation[0].numOfEvenCycles = getNumberOfEvenCycles(permutation[0]);
 
     for (int i=0; i < pi.sizeSymbols - 2; i++){
         if(cycle_index[pi.symbols[i]].sizeSymbols > 1){
@@ -109,26 +105,26 @@ Move * generateAll0And2Moves(Permutation spi, Cycle pi)
                             b = pi.symbols[j];
                             c = pi.symbols[k];
 
-                            if( cycle_index[a].symbols != cycle_index[b].symbols
+                            if(cycle_index[a].symbols != cycle_index[b].symbols
                                 &&  cycle_index[b].symbols != cycle_index[c].symbols
-                                &&  cycle_index[a].symbols != cycle_index[c].symbols ){
+                                &&  cycle_index[a].symbols != cycle_index[c].symbols ){ 
 
-                                is_2Move = 0;
+                                    is_2move = 0;
                             }
-
-                            if(is_2Move == 1){
+                            if(is_2move == 1){
                                 int symbols[] = {a, b, c};
+                                
+                                Cycle moveCycle;
                                 moveCycle.symbols = symbols;
-                                moveCycle.sizeSymbols = 3;
-                                int * symbolsIndexes = (int *) malloc((spi.maxSymbol+1) * sizeof(int));
+                                moveCycle.sizeSymbols = sizeof(symbols)/sizeof(int);
+                                moveCycle.symbolsIndexes = (int *) malloc((spi.maxSymbol+1) * sizeof(int));
                                 for(int idx = 0; idx < spi.maxSymbol+1; idx++){
-                                    symbolsIndexes[idx] = -1;
+                                    moveCycle.symbolsIndexes[idx] = -1;
                                 }
                                 for(int idx = 0; idx < moveCycle.sizeSymbols; idx++){
-                                    symbolsIndexes[symbols[idx]] = idx;
+                                    moveCycle.symbolsIndexes[moveCycle.symbols[idx]] = idx;
                                 }
                                 minMax(&moveCycle);
-                                moveCycle.symbolsIndexes = &symbolsIndexes[0];
 
                                 permutation[1].sizeMulticycle = 1;
                                 permutation[1].multicycle = getInverse(moveCycle, spi.maxSymbol+1);
@@ -137,6 +133,9 @@ Move * generateAll0And2Moves(Permutation spi, Cycle pi)
                                 permutation[1].numOfEvenCycles = getNumberOfEvenCycles(permutation[1]);
 
                                 spi_ = computeProduct(permutation, 2);
+                                free(permutation[1].multicycle);
+
+                                printf("%d\n", spi_.numOfEvenCycles);
 
                                 delta = spi_.numOfEvenCycles - spiNumberOfEvenCycles;
                                 free(spi_.multicycle);
@@ -148,14 +147,12 @@ Move * generateAll0And2Moves(Permutation spi, Cycle pi)
                                         moves = (Move *) realloc(moves, ++moves_size * sizeof(Move));
                                     }
                                     moves[moves_size-1].move = delta;
-                                    moves[moves_size-1].cycle.symbols = (int *) malloc(moveCycle.sizeSymbols * sizeof(int));
-                                    moves[moves_size-1].cycle.symbolsIndexes = (int *) malloc((spi.maxSymbol+1)*sizeof(int));
-                                    memcpy(moves[moves_size-1].cycle.symbols, moveCycle.symbols, moveCycle.sizeSymbols*sizeof(int));
-                                    memcpy(moves[moves_size-1].cycle.symbolsIndexes, moveCycle.symbolsIndexes, (spi.maxSymbol+1) * sizeof(int));
+                                    moves[moves_size-1].cycle.symbols = &moveCycle.symbols[0];
+                                    moves[moves_size-1].cycle.symbolsIndexes = &moveCycle.symbolsIndexes[0];
                                     moves[moves_size-1].cycle.sizeSymbols = moveCycle.sizeSymbols;
                                 }
                             }
-                            is_2Move = 1;
+                            is_2move = 1;
                         }
                     }
                 }
@@ -163,9 +160,6 @@ Move * generateAll0And2Moves(Permutation spi, Cycle pi)
         }
     }
     free(cycle_index);
-    free(permutation[0].multicycle);
-    free(permutation[1].multicycle);
-    free(permutation);
     
     double time_taken = ((double)t)/CLOCKS_PER_SEC;
     printf("generateAll0And2Moves took %f seconds\n", time_taken);
@@ -191,9 +185,7 @@ Cycle * searchFor2_2Seq(Permutation spi, Cycle pi) {
 
             Permutation new_permutation[2] = {spi, inverse_move};
 
-            printf("To enter compute");
             Permutation _spi = computeProduct(new_permutation, 2);
-            printf("Passed compute");
             Cycle _pi = optimizedApplyTransposition(pi, moves[i]);
             Move * secondMoves = generateAll0And2Moves(_spi, _pi);
 

@@ -84,9 +84,8 @@ int main()
             printf("%d", moves[i].symbols[j]);
         }
         printf("] \n");
+        free(moves[i].symbols);
+        free(moves[i].symbolsIndexes);
     }
-
     free(new_permutation.multicycle);
-    free(moves);
-    free(permutation);
 }
